@@ -1,0 +1,50 @@
+# templates/resourcespace-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-resourcespace
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-resourcespace
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-resourcespace
+    spec:
+      containers:
+      - name: resourcespace
+        image: {{ .Values.resourcespace.image.repository }}:{{ .Values.resourcespace.image.tag }}
+        env:
+        - name: DB_HOST
+          value: "{{ .Values.mariadb.name }}"
+        - name: DB_PORT
+          value: "{{ .Values.mariadb.service.port }}"
+        - name: DB_NAME
+          value: "{{ .Values.resourcespace.db.name }}"
+        - name: DB_USER
+          value: "{{ .Values.mariadb.users.dbUser }}"
+        - name: DB_PASS
+          value: "{{ .Values.mariadb.users.dbPassword }}"
+        volumeMounts:
+        - name: include
+          mountPath: {{ .Values.resourcespace.volumes.include.mountPath }}
+        - name: filestore
+          mountPath: {{ .Values.resourcespace.volumes.filestore.mountPath }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.resourcespace.service.port }}
+        resources:
+          requests:
+            memory: {{ .Values.resourcespace.resources.requests.memory }}
+            cpu: {{ .Values.resourcespace.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.resourcespace.resources.limits.memory }}
+            cpu: {{ .Values.resourcespace.resources.limits.cpu }}
+      volumes:
+      - name: include
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-resourcespace-include
+      - name: filestore
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-resourcespace-filestore

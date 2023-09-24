@@ -1,0 +1,43 @@
+# templates/mariadb-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mariadb
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-mariadb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: {{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: {{ .Values.mariadb.users.rootPassword }}
+        - name: MYSQL_DATABASE
+          value: {{ .Values.resourcespace.db.name }}
+        - name: MYSQL_USER
+          value: {{ .Values.mariadb.users.dbUser }}
+        - name: MYSQL_PASSWORD
+          value: {{ .Values.mariadb.users.dbPassword }}
+        ports:
+        - name: mysql
+          containerPort: {{ .Values.mariadb.service.port }}
+        volumeMounts:
+        - name: mariadb
+          mountPath: {{ .Values.mariadb.volumes.data.mountPath }}
+        resources:
+          requests:
+            memory: {{ .Values.mariadb.resources.requests.memory }}
+            cpu: {{ .Values.mariadb.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.mariadb.resources.limits.memory }}
+            cpu: {{ .Values.mariadb.resources.limits.cpu }}
+      volumes:
+      - name: mariadb
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-mariadb-data

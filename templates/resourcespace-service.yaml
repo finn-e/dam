@@ -1,0 +1,15 @@
+# templates/resourcespace-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-resourcespace
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: https
+    port: 443
+    targetPort: 443  
+  selector:
+    app: {{ .Release.Name }}-resourcespace
