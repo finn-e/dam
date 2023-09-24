@@ -4,4 +4,4 @@ apiVersion: v1
 description: Digital Asset Management System
 name: dam
 type: application
-version: 0.3.2
+version: 0.3.0

@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"redhat.vscode-yaml",
-		"editorconfig.editor"
+		"editorconfig.editor",
+    "nitayneeman.git-semantic-commit"
 	]
 }
